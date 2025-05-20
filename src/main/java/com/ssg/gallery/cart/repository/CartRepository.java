@@ -12,4 +12,10 @@ public interface CartRepository extends JpaRepository<Cart, Integer> {
 
     // 장바구니 정보 조회(특정 회원과 특정 상품)
     Optional<Cart> findByMemberIdAndItemId(Integer memberId, Integer itemId);
+
+    // 장바구니 삭제(특정 회원의 장바구니의 모든 상품을 삭제 기능)
+    void deleteByMemberId(Integer memberId);
+
+    // 장바구니 삭제(특정 회원, 특정 상품)
+    void deleteByMemberIdAndItemId(Integer memberId, Integer itemId);
 }
