@@ -1,40 +1,54 @@
 package com.ssg.gallery.cart.service;
 
-import com.ssg.gallery.cart.dto.CartRead;
+import jakarta.transaction.Transactional;
 import com.ssg.gallery.cart.entity.Cart;
+import com.ssg.gallery.cart.dto.CartRead;
+import com.ssg.gallery.cart.repository.CartRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class BaseCartService implements CartService {
 
-    private final CartService cartService;
+    private final CartRepository cartRepository;
 
+    // 장바구니 상품 데이터 목록 조회(특정 회원)
     @Override
-    public List<Cart> findAll(Integer memberId) {
-        return cartService.findAll(memberId);
+    public List<CartRead> findAll(Integer memberId) {
+        // 리스트의 값들을 DTO로 변환해서 리턴
+        return cartRepository.findAllByMemberId(memberId).stream().map(Cart::toRead).toList();
     }
 
+    // 장바구니 상품 데이터 조회(특정 회원의 특정 상품)
     @Override
     public CartRead find(Integer memberId, Integer itemId) {
-        return cartService.find(memberId, itemId);
+        Optional<Cart> cartOptional = cartRepository.findByMemberIdAndItemId(memberId, itemId);
+
+        // 값이 있으면 DTO로 변환해서 리턴, 없으면 null 리턴
+        return cartOptional.map(Cart::toRead).orElse(null);
     }
 
+    // 장바구니 상품 데이터 전체 삭제(특정 회원)
     @Override
+    @Transactional
     public void removeAll(Integer memberId) {
-        cartService.removeAll(memberId);
+        cartRepository.deleteByMemberId(memberId);
     }
 
+    // 장바구니 상품 데이터 삭제(특정 회원의 특정 상품)
     @Override
+    @Transactional
     public void remove(Integer memberId, Integer itemId) {
-        cartService.remove(memberId, itemId);
+        cartRepository.deleteByMemberIdAndItemId(memberId, itemId);
     }
 
+    // 장바구니 데이터 저장(특정 회원의 특정 상품)
     @Override
     public void save(Cart cart) {
-        cartService.save(cart);
+        cartRepository.save(cart);
     }
 }

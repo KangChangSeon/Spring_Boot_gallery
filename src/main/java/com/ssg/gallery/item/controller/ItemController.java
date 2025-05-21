@@ -3,7 +3,6 @@ package com.ssg.gallery.item.controller;
 import com.ssg.gallery.item.dto.ItemRead;
 import com.ssg.gallery.item.entity.Item;
 import com.ssg.gallery.item.repository.ItemRepository;
-import com.ssg.gallery.item.service.BaseItemService;
 import com.ssg.gallery.item.service.ItemService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -20,11 +19,12 @@ import java.util.List;
 public class ItemController {
     private final ItemService itemService;
 
-    // 전체 상품을 조회하는 메서드
+    //전체 상품을 조회하는 메서드
     @GetMapping("/api/items")
-    public ResponseEntity<?> readAll(){
+    public ResponseEntity<?> readAll() {
         List<ItemRead> items = itemService.findAll();
-//        return ResponseEntity.ok(items);
-        return new ResponseEntity<>(items,HttpStatus.OK);
+        //return ResponseEntity.ok(items);
+        return new ResponseEntity<>(items, HttpStatus.OK);
     }
+
 }
