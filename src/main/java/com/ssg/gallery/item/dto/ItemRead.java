@@ -10,7 +10,7 @@ import lombok.Getter;
 public class ItemRead {
       private Integer id;
       private String name;
-      private String img_path;
+      private String imgPath;
       private Integer price;
-      private Integer discount_per;
+      private Integer discountPer;
 }

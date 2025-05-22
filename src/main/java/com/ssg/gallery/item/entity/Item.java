@@ -39,9 +39,9 @@ public class Item {
           return ItemRead.builder()
                   .id(id)
                   .name(name)
-                  .img_path(img_path)
+                  .imgPath(img_path)
                   .price(price)
-                  .discount_per(discount_per)
+                  .discountPer(discount_per)
                   .build();
       }
 
