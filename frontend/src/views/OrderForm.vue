@@ -5,13 +5,36 @@ import {useRouter} from "vue-router";
 import {getItems} from "@/services/cartService";
 
 // 라우터 객체
-
+const router = useRouter();
 
 // 반응형 상태
+const state = reactive({
+  form: {
+    name: "",
+    address: "",
+    cardNumber: "",
+    payment: "",
+  },
+  item: [],
+});
 
-
+const getDiscountedPrice = (item) => {
+  return (item.price - (item.price * item.discountPer / 100)).toLocaleString();
+};
 // 최종 결제 금액
+const totalDiscountedPrice = computed(() =>
+    state.item.reduce((sum, item) => {
+      const discounted = item.price - (item.price * item.discountPer / 100);
+      return sum + discounted;
+    }, 0).toLocaleString()
+);
 
+const totalAmount = computed(() =>
+    state.item.reduce((sum, item) => {
+      const discounted = item.price - (item.price * item.discountPer / 100);
+      return sum + discounted;
+    }, 0)
+);
 
 // 주문 데이터 제출
 const submit = async () => {
@@ -34,14 +57,26 @@ const submit = async () => {
       return;
     }
   }
+  const orderData = {
+    name: state.form.name,
+    address: state.form.address,
+    payment: state.form.payment,
+    cardNumber:
+        state.form.payment === 'card' ? state.form.cardNumber : null,
+    amount: totalAmount.value
+  };
+  await addOrder(orderData);
 
-   // 결제 수단이 카드가 아니면
-
-
-
+  router.push('/')
 };
 
 // 커스텀 생성 훅
+(async function onCreated() {
+  const res = await getItems();
+  if (res.status === 200) {
+    state.item = res.data;
+  }
+})();
 
 </script>
 
@@ -63,21 +98,22 @@ const submit = async () => {
             <span class="badge bg-primary rounded-pill align-middle"></span>
           </div>
           <ul class="items list-group mb-3">
-            <li class="p-3 list-group-item d-flex justify-content-between">
+            <li class="p-3 list-group-item d-flex justify-content-between" v-for="item in state.item">
               <div>
-                <h6 class="my-0"></h6>
+                <h6 class="my-0">{{ item.name }}</h6>
               </div>
               <span class="text-muted">
-
+                {{ getDiscountedPrice(item) }}
               </span>
             </li>
           </ul>
           <div class="border p-4 bg-light h5 rounded text-center total-price">
             <span>합계 </span>
-            <b></b>
+            <b>{{ totalDiscountedPrice }}</b>
           </div>
           <button type="submit"
-                  class="w-100 btn btn-primary py-4 mt-4">결제하기</button>
+                  class="w-100 btn btn-primary py-4 mt-4">결제하기
+          </button>
         </div>
         <div class="col-md-7 col-lg-8">
           <div class="h5 mb-3">
@@ -86,11 +122,11 @@ const submit = async () => {
           <div class="row g-3">
             <div class="col-12">
               <label for="name" class="form-label">이름</label>
-              <input type="text" class="form-control p-3" id="name" />
+              <input type="text" class="form-control p-3" id="name" v-model="state.form.name"/>
             </div>
             <div class="col-12 pt-1">
               <label for="address" class="form-label">주소</label>
-              <input type="text" class="form-control p-3" id="address" />
+              <input type="text" class="form-control p-3" id="address" name="address" v-model="state.form.address"/>
             </div>
           </div>
           <div class="h5 mt-5 mb-3">
@@ -98,17 +134,19 @@ const submit = async () => {
           </div>
           <div class="my-3">
             <div class="form-check">
-              <input id="card" name="paymentMethod" type="radio" class="form-check-input" value="card" >
+              <input id="card" name="paymentMethod" type="radio" class="form-check-input" value="card"
+                     v-model="state.form.payment">
               <label class="form-check-label" for="card">신용카드</label>
             </div>
             <div class="form-check">
-              <input id="bank" name="paymentMethod" type="radio" class="form-check-input" value="bank" >
+              <input id="bank" name="paymentMethod" type="radio" class="form-check-input" value="bank"
+                     v-model="state.form.payment">
               <label class="form-check-label" for="bank">무통장입금</label>
             </div>
           </div>
-          <div class="pt-1" >
+          <div class="pt-1">
             <label for="cardNum" class="form-label">카드 번호</label>
-            <input type="text" class="form-control p-3" id="cardNum" >
+            <input type="text" class="form-control p-3" id="cardNum" v-model="state.form.cardNumber"/>
           </div>
         </div>
       </div>

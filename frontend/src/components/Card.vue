@@ -30,6 +30,7 @@ const put = async () => {
 
   if(res.status === 200 && window.confirm('장바구니에 상품을 담겼습니다. 장바구니로 이동하시겠습니까?')) {
     await router.push("/cart");
+    console.log("addItem 응답:", res.status);
   }
 
 };
