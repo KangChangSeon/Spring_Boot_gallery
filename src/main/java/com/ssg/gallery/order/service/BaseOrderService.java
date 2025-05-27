@@ -70,9 +70,9 @@ public class BaseOrderService implements OrderService {
         List<ItemRead> items = itemService.findAll(orderReq.getItemIds());
         long amount = 0L;
 
-//        for (ItemRead item : items) {
-//            amount += item.getPrice() - item.getPrice().longValue() * item.getDiscountPer() / 100;
-//        }
+        for (ItemRead item : items) {
+            amount += item.getPrice() - item.getPrice().longValue() * item.getDiscountPer() / 100;
+        }
 
         // 주문 요청에 최종 결제 금액 입력
         orderReq.setAmount(amount);

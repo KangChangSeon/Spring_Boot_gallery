@@ -1,55 +1,55 @@
 <script setup>
-import {reactive} from "vue";
-import {getItems, removeItem} from "@/services/cartService.js";
-import {useRouter} from "vue-router";
 
-const router = useRouter();
+import {getItems, removeItem} from "@/services/cartService"
+import {reactive} from "vue";
 
 // 반응형 상태
 const state = reactive({
-  item: [],
+  items: []
 });
 
 // 장바구니 상품 조회
-(async function getItem() {
+const load = async ()=>{
   const res = await getItems();
-  if (res.status == 200) {
-    state.item = res.data;
-  }
-})();
 
-// 장바구니 상품 삭제
-const deleteItem = async (itemId) => {
-  const res = await removeItem(itemId);
-  if (res.status == 200) {
-    const reload = await getItems();
-    if (res.status == 200) {
-      state.item = reload.data;
-    }
+  if (res.status === 200) {
+    state.items = res.data;
   }
 }
-const orderPage = () => {
-  router.push('/order')
+
+// 장바구니 상품 삭제
+const remove = async (itemId) => {
+  const res = await removeItem(itemId);
+
+  if (res.status === 200) {
+    window.alert("선택하신 장바구니의 상품을 삭제했습니다.");
+    await load();
+  }
 }
 
 // 커스텀 생성 훅
+(async function onCreated() {
+  await load();
+})();
 
 </script>
 
 <template>
   <div class="cart">
     <div class="container">
-      <template v-if="state.item.length">
+      <template v-if="state.items.length">
         <ul class="items">
-          <li v-for="item in state.item" :key="item.id">
-            <img :src="item.imgPath"/>
-            <b class="name">{{ item.name }}</b>
-            <span class="price">{{ item.price }}원 </span>
-            <span class="remove float-end" title="삭제" @click="deleteItem(item.id)">&times;</span>
+          <li v-for="i in state.items">
+            <img :alt="`상품 사진(${i.name})`" :src="i.imgPath"/>
+            <b class="name">{{ i.name }}</b>
+            <span class="price">
+            {{ (i.price - i.price * i.discountPer / 100).toLocaleString() }}원
+          </span>
+            <span class="remove float-end" @click="remove(i.id)" title="삭제">&times;</span>
           </li>
         </ul>
         <div class="act">
-          <button type="submit" class="btn btn-primary" @click="orderPage">주문하기</button>
+          <router-link to="/order" class="btn btn-primary">주문하기</router-link>
         </div>
       </template>
       <div class="text-center py-5" v-else>장바구니가 비어있습니다.</div>

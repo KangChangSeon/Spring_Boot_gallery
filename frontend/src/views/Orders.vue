@@ -1,19 +1,7 @@
 <script setup>
+import {getOrders} from "@/services/orderService";
 
 
-// 반응형 상태
-
-
-// 목록 번호 추출
-
-
-// 데이터 로드
-
-
-  /// HTTP 인수 전달
-
-
-// 커스텀 생성 훅
 
 </script>
 
@@ -39,7 +27,7 @@
           <td></td>
           <td></td>
           <td>
-
+            자세히 보기
           </td>
         </tr>
         </tbody>
@@ -47,8 +35,7 @@
       <div class="pagination d-flex justify-content-center pt-2">
         <div class="btn-group" role="group">
           <button class="btn py-2 px-3">
-
-          </button>
+                     </button>
         </div>
       </div>
     </div>
